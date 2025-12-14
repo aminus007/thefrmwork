@@ -38,6 +38,19 @@ export const isToday = (dateString) => {
 }
 
 /**
+ * Get the offset (0-6) for a weekday name relative to today.
+ * e.g. if today is Friday and dayName is 'thursday', returns 6 (next thursday)
+ */
+export const getDayOffsetFromToday = (dayName) => {
+  if (!dayName) return -1
+  const today = new Date()
+  const dayOfWeek = today.getDay() // 0 = Sunday
+  const dayLabels = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
+  const rotated = [...dayLabels.slice(dayOfWeek), ...dayLabels.slice(0, dayOfWeek)]
+  return rotated.indexOf(String(dayName).toLowerCase())
+}
+
+/**
  * Get a date key for N days from a given date key
  */
 export const addDays = (dateKey, days) => {

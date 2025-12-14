@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { getCurrentWeekKey, getDateKeyForDay, getDayData, saveDayData } from '../utils/storage'
-import { parseLocalDate } from '../utils/dateUtils'
+import { parseLocalDate, getDayOffsetFromToday } from '../utils/dateUtils'
 import { workoutPlans } from '../utils/workoutPlans'
 import './DayPage.css'
 
@@ -10,14 +10,13 @@ const DayPage = () => {
   const plan = workoutPlans[dayName]
   const [dayData, setDayData] = useState(null)
   const [weekKey, setWeekKey] = useState(getCurrentWeekKey())
-  const [dayIndex] = useState(['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'].indexOf(dayName))
 
   useEffect(() => {
     loadDayData()
   }, [dayName, weekKey])
 
   const loadDayData = () => {
-    const dateKey = getDateKeyForDay(weekKey, dayIndex)
+    const dateKey = getDateKeyForDay(weekKey, getDayOffsetFromToday(dayName))
     const data = getDayData(dateKey)
     if (data) {
       setDayData(data)
@@ -48,7 +47,7 @@ const DayPage = () => {
   }
 
   const saveData = async () => {
-    const dateKey = getDateKeyForDay(weekKey, dayIndex)
+    const dateKey = getDateKeyForDay(weekKey, getDayOffsetFromToday(dayName))
     await saveDayData(dateKey, dayData)
     alert('Workout saved!')
   }
