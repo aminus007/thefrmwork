@@ -1,99 +1,57 @@
-# Supabase Setup Guide
+# Setup
 
-This guide will help you set up Supabase cloud sync for the Hybrid Workout Tracker.
+This project uses Supabase for cloud sync. The sections below walk through prerequisites, local development, Supabase configuration, and troubleshooting.
 
-## Step 1: Create a Supabase Project
+## Prerequisites
+- Node 18+ (or compatible LTS)
+- npm (or yarn/pnpm)
 
-1. Go to [https://supabase.com](https://supabase.com)
-2. Sign up or log in
-3. Click "New Project"
-4. Fill in your project details:
-   - Name: `hybrid-workout-tracker` (or any name you prefer)
-   - Database Password: Choose a strong password (save it!)
-   - Region: Choose the closest region to you
-5. Click "Create new project"
-6. Wait for the project to be created (takes ~2 minutes)
+## Local development
+1. Install dependencies:
 
-## Step 2: Run the Database Schema
-
-1. In your Supabase project dashboard, go to **SQL Editor** (left sidebar)
-2. Click **New Query**
-3. Copy the entire contents of `supabase-schema.sql` from this project
-4. Paste it into the SQL Editor
-5. Click **Run** (or press Cmd/Ctrl + Enter)
-6. You should see "Success. No rows returned"
-
-## Step 3: Get Your API Keys
-
-1. In your Supabase project dashboard, go to **Settings** → **API** (left sidebar)
-2. You'll see:
-   - **Project URL**: Copy this value
-   - **anon public** key: Copy this value (under "Project API keys")
-
-## Step 4: Configure the App
-
-1. In the `hybrid-workout-tracker` directory, copy `.env.example` to `.env`:
-   ```bash
-   cp .env.example .env
-   ```
-
-2. Open `.env` and add your Supabase credentials:
-   ```
-   VITE_SUPABASE_URL=https://your-project-id.supabase.co
-   VITE_SUPABASE_ANON_KEY=your-anon-key-here
-   ```
-
-3. Replace the placeholder values with your actual Supabase URL and anon key
-
-## Step 5: Restart the Dev Server
-
-If your dev server is running, restart it:
 ```bash
-# Stop the server (Ctrl+C)
+npm install
+```
+
+2. Create environment file (there is no committed .env):
+
+Create a `.env` in the repo root with these keys:
+
+```env
+VITE_SUPABASE_URL=https://your-project-id.supabase.co
+VITE_SUPABASE_ANON_KEY=your-anon-key-here
+```
+
+3. Run the dev server:
+
+```bash
 npm run dev
 ```
 
-## Step 6: Verify Sync is Working
+4. Build for production:
 
-1. Open the app in your browser
-2. You should see a "Last synced" indicator at the top (if Supabase is configured)
-3. Go to Settings → you should see a "Cloud Sync" section
-4. Log a workout and check if it syncs
+```bash
+npm run build
+npm run preview
+```
 
-## How It Works
+## Supabase setup
+1. Create a project at https://supabase.com (choose a name, strong DB password, and region).
+2. In the Supabase dashboard open **SQL Editor**, create a new query and paste the contents of `supabase-schema.sql`, then run it to create the required tables.
+3. In **Settings → API** copy the **Project URL** and the **anon/public** key. Add them to your local `.env` as shown above.
 
-- **No Login Required**: Each device gets a unique device ID stored in localStorage
-- **Automatic Sync**: Data syncs to Supabase automatically when you save workouts
-- **Device-Specific**: Each device has its own data (identified by device ID)
-- **Offline-First**: App works offline, syncs when online
+## Verify sync
+1. Start the app and open it in the browser.
+2. In Settings you should see the Cloud Sync section and a "Last synced" indicator after performing an operation.
 
 ## Troubleshooting
+- If the app can't connect to Supabase, check your `.env` values and restart the dev server.
+- Inspect the browser console for errors and any network requests to your Supabase URL.
+- Confirm you ran `supabase-schema.sql` and the `workout_data` table exists in the Table Editor.
 
-### Sync Status Not Showing
-- Check that your `.env` file exists and has the correct values
-- Make sure you restarted the dev server after adding `.env`
-- Check browser console for any errors
+## Notes and security
+- The anon key is intended for client-side use; do not commit service_role keys to the client.
+- For production consider adding authentication and server-side operations for sensitive tasks.
 
-### Sync Failing
-- Verify your Supabase URL and anon key are correct
-- Check that you ran the SQL schema in Supabase
-- Check browser console for error messages
-- Verify your Supabase project is active (not paused)
-
-### Data Not Syncing
-- Check your internet connection
-- Look for errors in the browser console
-- Try manual sync from Settings page
-- Verify the `workout_data` table exists in Supabase (Table Editor)
-
-## Security Note
-
-The anon key is safe to use in client-side code. Supabase Row Level Security (RLS) policies ensure that:
-- Each device can only access its own data (via device_id)
-- The policy allows anonymous access but is scoped to device_id
-
-For production, consider:
-- Adding rate limiting
-- Implementing user authentication if you want multi-user support
-- Using service role key only on server-side (never expose it in client code)
+If you want, I can add a `.env.example` and a short script to generate a `.env` from prompts. Reply with "yes" to add those changes.
 
